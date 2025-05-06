@@ -34,6 +34,7 @@
                     <form action="{{ route('orders.destroy', ['id' => $order->id]) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this order?');">
                         @csrf
                         @method('DELETE')
+
                         <button class="btn btn-danger btn-sm">Delete</button>
                     </form>
 
@@ -41,6 +42,7 @@
                     <form action="{{ route('orders.restore', ['id' => $order->id]) }}" method="POST" style="display:inline-block;">
                         @csrf
                         <button class="btn btn-info btn-sm">Restore</button>
+
                     </form>
 
                     <form action="{{ route('orders.forceDelete', ['id' => $order->id]) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to permanently delete this order?');">

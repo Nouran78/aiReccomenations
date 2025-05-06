@@ -5,15 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-
+use App\Http\Controllers\RecommendationController;
 class OrderController extends Controller
 {
+    protected $recommendationController;
+
+    public function __construct(RecommendationController $recommendationController)
+    {
+        $this->recommendationController = $recommendationController;
+    }
+
     public function index(Request $request)
     {
 
+        $weatherData = $this->recommendationController->getWeather($request);
 
             $orders = DB::table('orders')
-                ->select('id', 'product_id', 'quantity', 'price', 'created_at', 'deleted_at')
+                ->select('id', 'product_id', 'quantity','type', 'price', 'adjusted_price', 'price_reason','created_at',   'updated_at','deleted_at')
                 ->get();
 
             return view('orders.index', compact('orders'));
@@ -27,15 +35,16 @@ class OrderController extends Controller
             $product_id = $request->input('product_id');
             $quantity = $request->input('quantity');
             $price = $request->input('price');
+            $type=$request->input('type');
             $date = now();
 
-            if (!$product_id || !$quantity || !$price) {
+            if (!$product_id || !$quantity || !$price ||  !$type) {
                 return response()->json(['error' => 'Missing fields'], 422);
             }
 
             DB::insert(
-                'INSERT INTO orders (product_id, quantity, price, created_at) VALUES (?, ?, ?, ?)',
-                [$product_id, $quantity, $price, $date]
+                'INSERT INTO orders (product_id, quantity, price,type, created_at) VALUES (?, ?,?,?, ?)',
+                [$product_id, $quantity, $price,$type, $date]
             );
 
             $lastId = DB::getPdo()->lastInsertId();
@@ -45,6 +54,7 @@ class OrderController extends Controller
                 'product_id' => $product_id,
                 'quantity' => $quantity,
                 'price' => $price,
+                'type' =>$type,
             ]);
 
             return response()->json(['message' => 'Order created and ready to broadcast via SSE'], 201);
@@ -111,51 +121,51 @@ class OrderController extends Controller
             'deleted_at' => null
         ]);
 
-        return response()->json(['message' => 'Order restored successfully.'], 200);
+        return redirect()->back()->with('success', 'Order restored successfully.');
+
+        // return response()->json(['message' => 'Order restored successfully.'], 200);
     }
 
 
-        public function edit($id)
-        {
-            $order = DB::table('orders')->where('id', $id)->first();
+    public function edit($id)
+    {
+        $order = DB::table('orders')->where('id', $id)->first();
 
-            if (!$order) {
-                return redirect()->back()->with('error', 'Order not found.');
-            }
-
-            return view('orders.edit', compact('order'));
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order not found.');
         }
 
-        public function update(Request $request, $id)
-        {
-            $order = DB::table('orders')->where('id', $id)->first();
+        return view('orders.edit', compact('order'));
+    }
+    public function update(Request $request, $id)
+    {
+        $order = DB::table('orders')->where('id', $id)->first();
 
-            if (!$order) {
-                return redirect()->back()->with('error', 'Order not found.');
-            }
-            $request->validate([
-                'product_id' => 'required',
-                'quantity' => 'required|integer|min:1',
-                'price' => 'required|numeric|min:0',
-            ]);
-
-            DB::table('orders')->where('id', $id)->update([
-                'product_id' => $request->input('product_id'),
-                'quantity' => $request->input('quantity'),
-                'price' => $request->input('price'),
-
-            ]);
-
-
-
-
-    return view('orders.edit', [
-        'order' => $order,
-        'success' => 'Order updated successfully.'
-    ]);
-
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order not found.');
         }
+        $request->validate([
+            'product_id' => 'required',
+            'quantity' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+        ]);
 
+        DB::table('orders')->where('id', $id)->update([
+            'product_id' => $request->input('product_id'),
+            'quantity' => $request->input('quantity'),
+            'price' => $request->input('price'),
+
+        ]);
+
+
+
+
+return view('orders.edit', [
+    'order' => $order,
+    'success' => 'Order updated successfully.'
+]);
+
+    }
 
     public function deletedOrders()
     {

@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
-class CreateUsersTable extends Migration
+
+class CreateProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +14,17 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-
         DB::statement('
-        CREATE TABLE users (
+        CREATE TABLE products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            email_verified_at TEXT,
-            password TEXT NOT NULL,
-            remember_token TEXT,
+            base_price REAL NOT NULL,          -- Base price for the product (before adjustment)
+            category TEXT CHECK(category IN ("cold", "hot")),  -- Category: cold or hot
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     ');
+
     }
 
     /**
@@ -35,7 +34,7 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        DB::statement('DROP TABLE IF EXISTS users');
+        DB::statement('DROP TABLE IF EXISTS products');
 
     }
 }
