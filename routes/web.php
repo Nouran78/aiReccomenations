@@ -19,7 +19,7 @@ use App\Http\Controllers\ChatController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json(['message' => 'Welcome to the API']);
 });
 // Route::post('/chat', ChatController::class);
 

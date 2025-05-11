@@ -14,18 +14,6 @@ class CreateOrdersTable extends Migration
     public function up()
     {
 
-
-        // DB::statement('
-        // CREATE TABLE orders(
-        // id INTEGER PRIMARY KEY AUTOINCREMENT,
-        // product_id INTEGER NOT NULL,
-        // quantity INTEGER NOT NULL,
-        // price REAL NOT NULL,
-        // created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        //   deleted_at TEXT NULL,
-
-        // )
-        // ');
         DB::statement('
         CREATE TABLE orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

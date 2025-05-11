@@ -10,12 +10,8 @@ class ProductController extends Controller
  public function index()
  {
      $products = DB::select('SELECT * FROM products');
-
-     return view('products.index', compact('products'));
-
-    //  return response()->json($products);
-
-    }
+     return response()->json($products);
+ }
      // POST /products
      public function store(Request $request)
      {

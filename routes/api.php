@@ -60,7 +60,8 @@ Route::delete('/orders/{id}/force-delete', 'forceDelete')->name('orders.forceDel
 
     // Route::get('/recommendations',  'getRecommendations')->name('recommend.get');
 Route::get('/weather',  [RecommendationController::class,'getWeather'])->name('recommend.weather');
-Route::get('/ai-recommendations', [RecommendationController::class, 'aiRecommendations']);
+Route::get('/recommendations', [RecommendationController::class, 'aiRecommendations']);
+// Route::get('/recommendations', [RecommendationController::class, 'getRecommendations']);
 
 Route::get('/home', [RecommendationController::class,'home'])->name('home');
 Route::post('/chat', ChatController::class)->name('chat');
